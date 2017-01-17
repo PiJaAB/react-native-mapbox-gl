@@ -82,10 +82,10 @@ public class ReactNativeMapboxGLView extends RelativeLayout implements
         _handler = new android.os.Handler();
         _manager = manager;
         _mapOptions = MapboxMapOptions.createFromAttributes(context, null);
-        _mapOptions.zoomGesturesEnabled(true);
-        _mapOptions.rotateGesturesEnabled(true);
-        _mapOptions.scrollGesturesEnabled(true);
-        _mapOptions.tiltGesturesEnabled(true);
+        _mapOptions.zoomGesturesEnabled(_zoomEnabled);
+        _mapOptions.rotateGesturesEnabled(_rotateEnabled);
+        _mapOptions.scrollGesturesEnabled(_scrollEnabled);
+        _mapOptions.tiltGesturesEnabled(_pitchEnabled);
     }
 
     // Lifecycle methods
@@ -248,6 +248,9 @@ public class ReactNativeMapboxGLView extends RelativeLayout implements
         _scrollEnabled = value;
         if (_map != null) {
             _map.getUiSettings().setScrollGesturesEnabled(value);
+        }
+        if (_mapOptions != null) {
+            _mapOptions.scrollGesturesEnabled(value);
         }
     }
 
