@@ -7,6 +7,7 @@ import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.support.v4.content.ContextCompat;
+import android.os.AsyncTask;
 
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableArray;
@@ -88,13 +89,45 @@ public class RNMGLAnnotationOptionsFactory {
     }
 
     static Drawable drawableFromUrl(Context context, String url) throws IOException {
-        // This doesn't currently work, as it throws NetworkOnMainThreadException
-        HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
-        connection.connect();
-        InputStream input = connection.getInputStream();
+        try {
+            URL urlConnection = new URL(url);
+            Bitmap bitmap = new RetrieveDrawableFromUrl().execute(urlConnection).get();
 
-        Bitmap bitmap = BitmapFactory.decodeStream(input);
-        return new BitmapDrawable(context.getResources(), bitmap);
+            if (bitmap == null) {
+                throw new IOException("Failed getting image");
+            }
+
+            return new BitmapDrawable(context.getResources(), bitmap);
+        } catch (MalformedURLException ex) {
+            throw ex;
+        } catch (Exception ex) {
+            throw new IOException(ex);
+        }
+    }
+
+    private static class RetrieveDrawableFromUrl extends AsyncTask<URL, Void, Bitmap> {
+        protected Bitmap doInBackground(URL... url) {
+            HttpURLConnection connection = null;
+            InputStream inputStream = null;
+
+            try {
+                connection = (HttpURLConnection) url[0].openConnection();
+                connection.connect();
+                inputStream = connection.getInputStream();
+                return BitmapFactory.decodeStream(inputStream);
+            } catch (Exception ex) {
+                if (inputStream != null) {
+                    try {
+                        inputStream.close();
+                    } catch (IOException e) {
+                    }
+                }
+                if (connection != null) {
+                    connection.disconnect();
+                }
+                return null;
+            }
+        }
     }
 
     static Map<String, Icon> iconCache = new HashMap();
