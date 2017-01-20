@@ -320,6 +320,8 @@ public class ReactNativeMapboxGLManager extends SimpleViewManager<ReactNativeMap
         }
         if (updates.hasKey("direction")) {
             cameraBuilder.bearing(updates.getDouble("direction"));
+        } else {
+            cameraBuilder.bearing(oldPosition.bearing);
         }
         if (updates.hasKey("pitch")) {
             cameraBuilder.tilt(updates.getDouble("pitch"));
