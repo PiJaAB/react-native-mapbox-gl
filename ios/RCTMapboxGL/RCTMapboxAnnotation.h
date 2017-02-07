@@ -1,6 +1,6 @@
 #import "RCTMapboxAnnotation.h"
 
-#import <MapBox/MapBox.h>
+#import <Mapbox/Mapbox.h>
 #import <UIKit/UIKit.h>
 
 #import <React/RCTConvert+MapKit.h>
